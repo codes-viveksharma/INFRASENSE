@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .status-badge {
+    @apply px-3 py-1 rounded-full text-sm font-semibold;
+  }
+  
+  .status-green {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .status-yellow {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .status-red {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .btn-primary {
+    @apply bg-smart-blue text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  /* small utility animations for decorative background icons */
+  .animate-fade-in {
+    animation: fadeIn 700ms ease forwards;
+  }
+
+  .delay-150 {
+    animation-delay: 150ms;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
