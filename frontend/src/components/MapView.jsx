@@ -119,7 +119,7 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   };
 
   return (
-    <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-full rounded-none border-0' : 'h-[600px]'}`}>
+    <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-[85vh] rounded-none border-0' : 'h-[600px]'}`}>
       <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex gap-2">
         <div className="relative flex-1">
           <form onSubmit={handleManualSearch} className="flex gap-2">
