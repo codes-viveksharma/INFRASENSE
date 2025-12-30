@@ -43,6 +43,21 @@ const Complaints = () => {
   };
 
   useEffect(() => {
+    // Check for URL parameters for location pre-fill from Map
+    const params = new URLSearchParams(window.location.search);
+    const lat = params.get('lat');
+    const lng = params.get('lng');
+    if (lat && lng) {
+      setFormData(prev => ({
+        ...prev,
+        location: `Lat: ${parseFloat(lat).toFixed(4)}, Lng: ${parseFloat(lng).toFixed(4)}`
+      }));
+      // Optional: Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 4000);
     return () => clearInterval(interval);
@@ -150,7 +165,10 @@ const Complaints = () => {
                     </div>
                   )}
                   {item.status === 'scheduled' && (
-                    <button onClick={() => handleStatusUpdate(item.id, 'resolved', item.feedType === 'alert')} className="w-full py-3 bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase">Mark Fixed</button>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-center text-xs font-bold text-purple-600 bg-purple-50 py-2 rounded-lg border border-purple-100 uppercase tracking-widest">Maintenance Scheduled</span>
+                      <button onClick={() => handleStatusUpdate(item.id, 'resolved', item.feedType === 'alert')} className="w-full py-3 bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase hover:bg-emerald-700 transition-colors">Mark Fixed</button>
+                    </div>
                   )}
                   {['resolved', 'rejected'].includes(item.status) && (
                     <div className="text-center py-2 text-xs font-bold text-gray-400 border border-dashed rounded-xl uppercase">Archived</div>

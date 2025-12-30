@@ -15,6 +15,7 @@ const Navbar = () => {
       { name: 'Home', path: '/' },
       { name: 'Dashboard', path: '/dashboard' },
       { name: 'Maps', path: '/map' },
+      { name: 'Live Complaints', path: '/complaints' },
       { name: 'Resolved Issues', path: '/alerts' },
     ]
     : [
@@ -56,12 +57,14 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                to="/complaints"
-                className="inline-flex items-center px-4 h-10 self-center bg-red-600 hover:bg-red-700 text-white text-sm font-black rounded-lg transition-all shadow-lg shadow-red-500/20"
-              >
-                Register a Complain
-              </Link>
+              {!isAdmin && (
+                <Link
+                  to="/complaints"
+                  className="inline-flex items-center px-4 h-10 self-center bg-red-600 hover:bg-red-700 text-white text-sm font-black rounded-lg transition-all shadow-lg shadow-red-500/20"
+                >
+                  Register a Complain
+                </Link>
+              )}
             </div>
           </div>
           <div className="flex items-center space-x-4">
