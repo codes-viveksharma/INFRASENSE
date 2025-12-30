@@ -139,8 +139,6 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
           </form>
           {suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto custom-scrollbar">
-          {suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl overflow-hidden">
               {suggestions.map((item, index) => (
                 <button
                   key={index}
@@ -152,15 +150,14 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
               ))}
             </div>
           )}
+          <button
+            onClick={handleLiveLocation}
+            className="px-4 py-3 bg-white/90 backdrop-blur-md text-blue-600 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center"
+            title="Use my location"
+          >
+            {isLocating ? '...' : '📍'}
+          </button>
         </div>
-        <button
-          onClick={handleLiveLocation}
-          className="px-4 py-3 bg-white/90 backdrop-blur-md text-blue-600 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center"
-          title="Use my location"
-        >
-          {isLocating ? '...' : '📍'}
-        </button>
-      </div>
 
         <MapContainer
           center={mapCenter}
@@ -248,14 +245,15 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
           </div>
         </div>
       </div>
-      );
+    </div>
+  );
 };
 
-      const LegendItem = ({color, label}) => (
-      <div className="flex items-center gap-3">
-        <div className={`w-3 h-3 rounded-full ${color}`}></div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">{label}</span>
-      </div>
-      );
+const LegendItem = ({ color, label }) => (
+  <div className="flex items-center gap-3">
+    <div className={`w-3 h-3 rounded-full ${color}`}></div>
+    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">{label}</span>
+  </div>
+);
 
-      export default MapView;
+export default MapView;
