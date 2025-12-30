@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import MapView from "../components/MapView";
 import StatusGrid from "../components/StatusGrid";
 import Charts from "../components/Charts";
 import AlertPanel from "../components/AlertPanel";
@@ -14,7 +15,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
-  const tabs = isAdmin ? ['overview', 'maintenance'] : ['overview'];
+  const tabs = isAdmin ? ['overview', 'map', 'maintenance'] : ['overview', 'map'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,6 +117,13 @@ const Dashboard = () => {
           <StatusGrid infrastructure={infrastructure} />
           <Charts infrastructure={infrastructure} />
         </>
+      )}
+
+      {activeTab === 'map' && (
+        <div className="bg-white dark:bg-dark-card rounded-[32px] shadow-lg p-6 mb-8 border border-gray-100 dark:border-gray-800">
+          <h2 className="text-xl font-bold mb-6">Interactive City Map</h2>
+          <MapView infrastructure={infrastructure} complaints={complaints} />
+        </div>
       )}
 
       {activeTab === 'maintenance' && isAdmin && (

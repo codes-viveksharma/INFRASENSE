@@ -10,24 +10,19 @@ const Navbar = () => {
   const [password, setPassword] = useState('');
 
   // Admin labels per user request: Home, Dashboard, Live Complaints, Resolved Issues
-  // Admin labels
-  const baseNavItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Maps', path: '/map' },
-  ];
-
-  const adminNavItems = [
-    ...baseNavItems,
-    { name: 'Resolved Issues', path: '/alerts' },
-  ];
-
-  const userNavItems = [
-    ...baseNavItems,
-    { name: 'Alerts', path: '/alerts' },
-  ];
-
-  const navItems = isAdmin ? adminNavItems : userNavItems;
+  const navItems = isAdmin
+    ? [
+      { name: 'Home', path: '/' },
+      { name: 'Dashboard', path: '/dashboard' },
+      { name: 'Live Complaints', path: '/complaints' },
+      { name: 'Resolved Issues', path: '/alerts' },
+    ]
+    : [
+      { name: 'Home', path: '/' },
+      { name: 'Dashboard', path: '/dashboard' },
+      { name: 'Complaints', path: '/complaints' },
+      { name: 'Alerts', path: '/alerts' },
+    ];
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -61,13 +56,6 @@ const Navbar = () => {
                 </Link>
               ))}
             </div>
-            {/* Register Complaint Button */}
-            <Link
-              to="/complaints"
-              className="hidden sm:flex ml-6 items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-200 dark:shadow-none transition-all hover:scale-105"
-            >
-              Register a Complaint
-            </Link>
           </div>
           <div className="flex items-center space-x-4">
             {!isAdmin ? (
