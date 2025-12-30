@@ -72,9 +72,9 @@ const Footer = () => {
                     </p>
                     <div className="flex gap-6">
                         {[
-                            { name: 'Instagram', url: 'https://instagram.com', color: 'hover:text-pink-600' },
-                            { name: 'Twitter', url: 'https://twitter.com', color: 'hover:text-blue-400' },
-                            { name: 'LinkedIn', url: 'https://linkedin.com', color: 'hover:text-blue-700' }
+                            { name: 'Instagram', url: 'https://www.instagram.com/hacktropica/', color: 'hover:text-pink-600' },
+                            { name: 'Twitter', url: 'https://x.com/HackTropica', color: 'hover:text-blue-400' },
+                            { name: 'LinkedIn', url: 'https://www.linkedin.com/company/hacktropica/posts/?feedView=all', color: 'hover:text-blue-700' }
                         ].map((social) => (
                             <a
                                 key={social.name}

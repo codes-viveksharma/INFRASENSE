@@ -49,23 +49,42 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   const [mapCenter, setMapCenter] = useState(userLocation || [40.7128, -74.0060]);
   const [zoom, setZoom] = useState(13);
   const [isLocating, setIsLocating] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (searchQuery.length > 2) {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&addressdetails=1&limit=5`);
+          const data = await res.json();
+          setSuggestions(data);
+          setShowSuggestions(true);
+        } catch (e) {
+          console.error("Search fetch error", e);
+        }
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 500); // Debounce
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handleSelectSuggestion = (place) => {
+    const { lat, lon, display_name } = place;
+    setMapCenter([parseFloat(lat), parseFloat(lon)]);
+    setZoom(16);
+    setSearchQuery(display_name);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery) return;
-
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
-      const data = await response.json();
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        setMapCenter([parseFloat(lat), parseFloat(lon)]);
-        setZoom(15);
-      } else {
-        alert('Location not found');
-      }
-    } catch (error) {
-      console.error('Search error:', error);
+    if (suggestions.length > 0) {
+      handleSelectSuggestion(suggestions[0]);
     }
   };
 
@@ -93,29 +112,45 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
 
   return (
     <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-[calc(100vh-64px)] rounded-none border-0' : 'h-[600px]'}`}>
-      <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex gap-2">
-        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Find a location..."
-            className="flex-1 px-5 py-3 rounded-2xl border-0 bg-white/90 backdrop-blur-md shadow-2xl outline-none text-sm font-medium"
-          />
+      <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex flex-col gap-2">
+        <div className="flex gap-2">
+          <form onSubmit={handleSearch} className="flex-1 flex gap-2 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
+              placeholder="Find a location..."
+              className="flex-1 px-5 py-3 rounded-2xl border-0 bg-white/90 backdrop-blur-md shadow-2xl outline-none text-sm font-medium"
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto border border-gray-100 z-[1100]">
+                {suggestions.map((place) => (
+                  <li
+                    key={place.place_id}
+                    onClick={() => handleSelectSuggestion(place)}
+                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer text-xs text-gray-700 border-b border-gray-50 last:border-0"
+                  >
+                    {place.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button
+              type="submit"
+              className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-lg hover:bg-blue-700 transition-all"
+            >
+              Search
+            </button>
+          </form>
           <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-lg hover:bg-blue-700 transition-all"
+            onClick={handleLiveLocation}
+            className="px-4 py-3 bg-white/90 backdrop-blur-md text-blue-600 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center min-w-[50px]"
+            title="Use my location"
           >
-            Search
+            {isLocating ? '...' : '📍'}
           </button>
-        </form>
-        <button
-          onClick={handleLiveLocation}
-          className="px-4 py-3 bg-white/90 backdrop-blur-md text-blue-600 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center min-w-[50px]"
-          title="Use my location"
-        >
-          {isLocating ? '...' : '📍'}
-        </button>
+        </div>
       </div>
 
       <MapContainer
