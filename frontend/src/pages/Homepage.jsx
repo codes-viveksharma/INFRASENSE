@@ -61,7 +61,7 @@ const Homepage = () => {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-[0.95] mb-10 tracking-tighter animate-fade-in-up animation-delay-150">
-              Monitor. Predict. <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">Prevent.</span>
+              <span className="text-blue-600">Monitor.</span> <span className="text-purple-600">Predict.</span> <span className="text-emerald-500">Prevent.</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 mb-16 max-w-3xl mx-auto font-medium leading-relaxed animate-fade-in-up animation-delay-300">
@@ -85,13 +85,21 @@ const Homepage = () => {
         </div>
       </section>
 
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
       {/* Metrics Section */}
       <section className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { label: "Active Nodes", value: "84.2k", color: "text-blue-600" },
-              { label: "Response Time", value: "< 12m", color: "text-emerald-500" },
+              { label: "Response Time", value: "< 10m", color: "text-emerald-500" },
               { label: "Reliability", value: "99.98%", color: "text-purple-600" },
               { label: "Data Flow", value: "4.2 TB/d", color: "text-amber-500" }
             ].map((stat, i) => (
@@ -103,6 +111,12 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
 
       {/* Features Grid */}
       <section className="py-32 relative z-10">
@@ -133,6 +147,12 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
 
       {/* Live Status Card */}
       <section className="py-32 relative z-10">
@@ -193,6 +213,12 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
+
+      <div className="max-w-7xl mx-auto px-4"><hr className="border-gray-200 dark:border-gray-800" /></div>
 
       {/* Footer CTA */}
       <footer className="py-44 relative z-10 overflow-hidden">
