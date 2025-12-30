@@ -8,9 +8,18 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://infrasense-qday.vercel.app"],
     methods: ["GET", "POST", "PATCH"]
   }
+});
+
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+  socket.emit('initialData', {
+    infrastructure,
+    alerts: alerts.filter(a => a.active),
+    complaints
+  });
 });
 
 app.use(cors({
@@ -54,7 +63,9 @@ infrastructure = generateInitialData();
 const updateInfrastructure = () => {
   infrastructure.forEach(infra => {
     infra.value = Math.max(0, infra.value + (Math.random() - 0.5) * 5);
-    if (Math.random() > 0.98) {
+
+    // Only update status to red if it's currently green or red (not yellow - in maintenance)
+    if (infra.status !== 'yellow' && Math.random() > 0.98) {
       infra.status = 'red';
       infra.anomaly = 'System Anomaly';
       const existing = alerts.find(a => a.infrastructureId === infra.id && a.active);
@@ -115,6 +126,45 @@ app.patch('/api/alerts/:id', (req, res) => {
     res.json(alert);
   } else {
     res.status(404).json({ error: 'Alert not found' });
+  }
+});
+
+app.post('/api/maintenance/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(`Maintenance requested for ID: ${id}`);
+
+  const itemIndex = infrastructure.findIndex(i => i.id === id);
+
+  if (itemIndex !== -1) {
+    const item = infrastructure[itemIndex];
+    item.status = 'yellow';
+    item.maintenanceScheduled = new Date();
+    item.lastUpdated = new Date();
+    item.anomaly = null; // Clear anomaly title
+
+    // Resolve any active alerts for this item
+    let alertsUpdated = false;
+    alerts.forEach(alert => {
+      if (alert.infrastructureId === id && alert.active) {
+        alert.active = false;
+        alert.status = 'resolved';
+        alert.resolvedAt = new Date();
+        alertsUpdated = true;
+      }
+    });
+
+    console.log(`Item ${item.name} updated to yellow status.`);
+
+    // Broadcast updates immediately
+    io.emit('infrastructureUpdate', infrastructure);
+    if (alertsUpdated) {
+      io.emit('alertsUpdate', alerts.filter(a => a.active));
+    }
+
+    res.json({ success: true, item });
+  } else {
+    console.error(`Infrastructure item with ID ${id} not found.`);
+    res.status(404).json({ error: 'Infrastructure item not found' });
   }
 });
 

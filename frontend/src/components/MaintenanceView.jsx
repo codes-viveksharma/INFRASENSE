@@ -23,7 +23,7 @@ const MaintenanceView = ({ infrastructure, onScheduleMaintenance }) => {
             </thead>
             <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-gray-700">
               {criticalItems.length === 0 ? (
-                  <tr>
+                <tr>
                   <td colSpan="5" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                     <div className="text-4xl mb-4">✅</div>
                     No critical infrastructure issues
@@ -71,30 +71,30 @@ const MaintenanceView = ({ infrastructure, onScheduleMaintenance }) => {
           <p className="text-yellow-600">Maintenance in progress or scheduled</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Scheduled Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estimated Completion</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Scheduled Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Estimated Completion</th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-gray-700">
               {maintenanceItems.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="5" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                     <div className="text-4xl mb-4">🔧</div>
                     No scheduled maintenance
                   </td>
                 </tr>
               ) : (
                 maintenanceItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-yellow-50">
+                  <tr key={item.id} className="hover:bg-yellow-50 dark:hover:bg-gray-900">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{item.name}</div>
-                      <div className="text-sm text-gray-500">{item.location.name}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{item.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{item.location.name}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -104,20 +104,20 @@ const MaintenanceView = ({ infrastructure, onScheduleMaintenance }) => {
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2 animate-pulse"></div>
-                        <span className="font-medium text-yellow-700">In Progress</span>
+                        <span className="font-medium text-yellow-700 dark:text-yellow-500">In Progress</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {item.maintenanceScheduled 
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {item.maintenanceScheduled
                         ? new Date(item.maintenanceScheduled).toLocaleString()
                         : 'Just now'
                       }
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {new Date(Date.now() + 2*60*60*1000).toLocaleTimeString()}
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {new Date(Date.now() + 2 * 60 * 60 * 1000).toLocaleTimeString()}
                       </div>
-                      <div className="text-xs text-gray-500">~2 hours</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">~2 hours</div>
                     </td>
                   </tr>
                 ))
@@ -134,13 +134,13 @@ const MaintenanceView = ({ infrastructure, onScheduleMaintenance }) => {
           <div className="text-gray-600 dark:text-gray-300">Critical Issues</div>
           <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">Require immediate attention</div>
         </div>
-        
+
         <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-lg">
           <div className="text-3xl font-bold text-yellow-600 mb-2">{maintenanceItems.length}</div>
           <div className="text-gray-600 dark:text-gray-300">In Maintenance</div>
           <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">Currently being repaired</div>
         </div>
-        
+
         <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-lg">
           <div className="text-3xl font-bold text-smart-blue mb-2">
             {Math.round((maintenanceItems.length / (criticalItems.length + maintenanceItems.length || 1)) * 100)}%

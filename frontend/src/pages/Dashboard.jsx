@@ -98,14 +98,27 @@ const Dashboard = () => {
   }, []);
 
   const handleScheduleMaintenance = async (id) => {
-    const response = await fetch(`/api/maintenance/${id}`, {
-      method: 'POST'
-    });
+    console.log(`Frontend: Scheduling maintenance for ID: ${id}`);
+    try {
+      const response = await fetch(`/api/maintenance/${id}`, {
+        method: 'POST'
+      });
 
-    if (response.ok) {
-      setInfrastructure(prev => prev.map(item =>
-        item.id === id ? { ...item, status: 'yellow', maintenanceScheduled: new Date() } : item
-      ));
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Frontend: Maintenance scheduled successfully:', result);
+        // Socket will update the state, but we can also do it locally for instant feedback
+        setInfrastructure(prev => prev.map(item =>
+          item.id === id ? { ...item, status: 'yellow', maintenanceScheduled: new Date() } : item
+        ));
+      } else {
+        const errorData = await response.json();
+        console.error('Frontend: Failed to schedule maintenance:', errorData);
+        alert(`Failed to schedule maintenance: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Frontend: Error in handleScheduleMaintenance:', error);
+      alert('Network error while scheduling maintenance.');
     }
   };
 
