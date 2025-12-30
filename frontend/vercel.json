@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://infrasense-backend.onrender.com/api/:path*"
+      "destination": "https://infrasense-qday.onrender.com/api/:path*"
     }
   ]
 }
