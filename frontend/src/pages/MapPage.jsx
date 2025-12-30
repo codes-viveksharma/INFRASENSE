@@ -14,8 +14,14 @@ const MapPage = () => {
                 ]);
 
                 if (infraRes.ok && complaintRes.ok) {
-                    setInfrastructure(await infraRes.json());
-                    setComplaints(await complaintRes.json());
+                    const infraData = await infraRes.json();
+                    const complaintData = await complaintRes.json();
+
+                    if (Array.isArray(infraData)) setInfrastructure(infraData);
+                    else console.error("Infrastructure data is not an array:", infraData);
+
+                    if (Array.isArray(complaintData)) setComplaints(complaintData);
+                    else console.error("Complaint data is not an array:", complaintData);
                 }
             } catch (error) {
                 console.error('Error fetching map data:', error);
