@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const location = useLocation();
@@ -58,19 +59,25 @@ const Navbar = () => {
           </div>
           <div className="flex items-center space-x-4">
             {!isAdmin ? (
-              <button
-                onClick={() => setShowLoginModal(true)}
-                className="px-4 py-2 bg-smart-blue hover:bg-blue-700 text-white rounded-lg text-sm font-bold"
-              >
-                Admin Login
-              </button>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="px-4 py-2 bg-smart-blue hover:bg-blue-700 text-white rounded-lg text-sm font-bold"
+                >
+                  Admin Login
+                </button>
+              </div>
             ) : (
-              <button
-                onClick={logout}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-bold"
-              >
-                Logout
-              </button>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-bold"
+                >
+                  Logout
+                </button>
+              </div>
             )}
           </div>
         </div>

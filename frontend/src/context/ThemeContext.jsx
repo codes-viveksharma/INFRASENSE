@@ -4,12 +4,9 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage or system preference
+    // Check localStorage, default to light
     const savedTheme = localStorage.getItem('smart-city-theme');
-    if (savedTheme) {
-      return savedTheme === 'dark';
-    }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return savedTheme === 'dark';
   });
 
   useEffect(() => {

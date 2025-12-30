@@ -15,7 +15,7 @@ function App() {
       <AuthProvider>
         <LocationProvider>
           <Router>
-            <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 flex flex-col">
+            <div className="min-h-screen bg-white dark:bg-dark-bg transition-colors duration-300 flex flex-col">
               <Navbar />
               <main className="flex-grow">
                 <Routes>
