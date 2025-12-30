@@ -1,18 +1,45 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLocationContext } from '../context/LocationContext';
 
-// ... (keep icon code same)
+// Fix for default marker icons in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
-// Click handler component defined outside to avoid re-mounting issues
-const MapEvents = ({ onMapClick }) => {
-  useMapEvents({
-    click(e) {
-      onMapClick(e.latlng);
-    },
+const createCustomIcon = (color) => {
+  return new L.Icon({
+    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
   });
+};
+
+const icons = {
+  green: createCustomIcon('green'),
+  yellow: createCustomIcon('gold'),
+  red: createCustomIcon('red'),
+  blue: createCustomIcon('blue'),
+  violet: createCustomIcon('violet'),
+  gold: createCustomIcon('orange')
+};
+
+// Component to handle map center updates
+const ChangeView = ({ center, zoom }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.setView(center, zoom);
+    }
+  }, [center, zoom, map]);
   return null;
 };
 
@@ -22,7 +49,6 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   const [mapCenter, setMapCenter] = useState(userLocation || [40.7128, -74.0060]);
   const [zoom, setZoom] = useState(13);
   const [isLocating, setIsLocating] = useState(false);
-  const [targetLocation, setTargetLocation] = useState(null);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -65,12 +91,6 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
     }
   };
 
-  const handleRegisterComplaint = () => {
-    if (targetLocation) {
-      window.location.href = `/complaints?lat=${targetLocation.lat}&lng=${targetLocation.lng}`;
-    }
-  };
-
   return (
     <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-[calc(100vh-64px)] rounded-none border-0' : 'h-[600px]'}`}>
       <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex gap-2">
@@ -105,37 +125,10 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
         zoomControl={false}
       >
         <ChangeView center={mapCenter} zoom={zoom} />
-        <MapEvents onMapClick={setTargetLocation} />
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
-
-        {/* Click Popup */}
-        {targetLocation && (
-          <Popup position={targetLocation}>
-            <div className="p-2 text-center">
-              <h3 className="text-sm font-bold mb-2 text-gray-900">Selected Location</h3>
-              <p className="text-xs text-gray-500 mb-3">
-                {targetLocation.lat.toFixed(4)}, {targetLocation.lng.toFixed(4)}
-              </p>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => window.open(`https://www.google.com/maps?q=${targetLocation.lat},${targetLocation.lng}`, '_blank')}
-                  className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors"
-                >
-                  See Details
-                </button>
-                <button
-                  onClick={handleRegisterComplaint}
-                  className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-colors"
-                >
-                  Register Complaint
-                </button>
-              </div>
-            </div>
-          </Popup>
-        )}
 
         {/* User Location */}
         {userLocation && (
