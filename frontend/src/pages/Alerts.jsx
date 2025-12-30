@@ -8,10 +8,24 @@ const Alerts = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
+        const fetchWithTimeout = async (url) => {
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), 15000);
+          try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(id);
+            return response;
+          } catch (e) {
+            clearTimeout(id);
+            throw e;
+          }
+        };
+
         const [alertRes, compRes] = await Promise.all([
-          fetch('/api/alerts/history'),
-          fetch('/api/complaints')
+          fetchWithTimeout('/api/alerts/history'),
+          fetchWithTimeout('/api/complaints')
         ]);
 
         const alerts = await alertRes.json();
@@ -19,8 +33,8 @@ const Alerts = () => {
 
         // Merge everything that qualifies as "Resolved" or "Archived"
         const merged = [
-          ...alerts.filter(a => !a.active).map(a => ({ ...a, type: 'ALERT', source: 'SENSOR' })),
-          ...complaints.filter(c => ['resolved', 'rejected'].includes(c.status)).map(c => ({
+          ...alerts.filter(a => !['pending', 'CRITICAL', 'approved'].includes(a.status)).map(a => ({ ...a, type: 'ALERT', source: 'SENSOR' })),
+          ...complaints.filter(c => !['pending', 'CRITICAL', 'approved'].includes(c.status)).map(c => ({
             ...c,
             message: c.description,
             infrastructureName: c.name || 'Citizen Report',
@@ -39,6 +53,15 @@ const Alerts = () => {
 
     fetchData();
   }, []);
+
+  if (loading && items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-dark-bg transition-colors">
+        <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+        <div className="mt-4 text-gray-500 font-bold uppercase tracking-widest text-xs">Fetching Archives...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

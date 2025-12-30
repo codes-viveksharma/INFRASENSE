@@ -27,18 +27,41 @@ const Complaints = () => {
     imageUrl: ''
   });
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const fetchData = async () => {
     try {
+      const fetchWithTimeout = async (url) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 15000);
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          clearTimeout(id);
+          return response;
+        } catch (e) {
+          clearTimeout(id);
+          throw e;
+        }
+      };
+
       const [compRes, alertRes] = await Promise.all([
-        fetch('/api/complaints'),
-        fetch('/api/alerts')
+        fetchWithTimeout('/api/complaints'),
+        fetchWithTimeout('/api/alerts')
       ]);
+
       if (compRes.ok && alertRes.ok) {
         setComplaints(await compRes.json());
         setLiveAlerts(await alertRes.json());
+        setError(null);
       }
     } catch (err) {
       console.error("Fetch Data failed", err);
+      if (complaints.length === 0) {
+        setError('Failed to load live data.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -114,7 +137,17 @@ const Complaints = () => {
       name: a.infrastructureName,
       location: 'Sensor Alert'
     }))
-  ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  ].filter(item => ['pending', 'CRITICAL', 'approved'].includes(item.status))
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  if (loading && complaints.length === 0 && liveAlerts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors">
+        <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+        <div className="mt-4 text-gray-500 font-bold uppercase tracking-widest text-xs">Accessing Action Center...</div>
+      </div>
+    );
+  }
 
   if (isAdmin) {
     return (

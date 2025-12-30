@@ -108,8 +108,8 @@ app.patch('/api/alerts/:id', (req, res) => {
   const alert = alerts.find(a => a.id === id);
   if (alert) {
     alert.status = status;
-    if (['resolved', 'approved', 'scheduled', 'rejected'].includes(status)) {
-      alert.active = false;
+    alert.active = !['resolved', 'rejected'].includes(status);
+    if (!alert.active) {
       alert.resolvedAt = new Date();
     }
     res.json(alert);
