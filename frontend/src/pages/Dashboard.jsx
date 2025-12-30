@@ -11,6 +11,8 @@ const Dashboard = () => {
   const [infrastructure, setInfrastructure] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
   const [error, setError] = useState(null);
   const [retrying, setRetrying] = useState(false);
   const [slowServer, setSlowServer] = useState(false);
