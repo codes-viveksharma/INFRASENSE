@@ -43,11 +43,12 @@ const ChangeView = ({ center, zoom }) => {
   return null;
 };
 
-const MapView = ({ infrastructure, complaints = [] }) => {
+const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   const { userLocation } = useLocationContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [mapCenter, setMapCenter] = useState(userLocation || [40.7128, -74.0060]);
   const [zoom, setZoom] = useState(13);
+  const [isLocating, setIsLocating] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -68,10 +69,32 @@ const MapView = ({ infrastructure, complaints = [] }) => {
     }
   };
 
+  const handleLiveLocation = () => {
+    setIsLocating(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMapCenter([latitude, longitude]);
+          setZoom(16);
+          setIsLocating(false);
+          setSearchQuery('');
+        },
+        () => {
+          alert("Unable to retrieve your location");
+          setIsLocating(false);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser");
+      setIsLocating(false);
+    }
+  };
+
   return (
-    <div className="relative h-[600px] w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800">
-      <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm">
-        <form onSubmit={handleSearch} className="flex gap-2">
+    <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-[85vh] rounded-none border-0' : 'h-[600px]'}`}>
+      <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex gap-2">
+        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <input
             type="text"
             value={searchQuery}
@@ -86,6 +109,13 @@ const MapView = ({ infrastructure, complaints = [] }) => {
             Search
           </button>
         </form>
+        <button
+          onClick={handleLiveLocation}
+          className="px-4 py-3 bg-white/90 backdrop-blur-md text-blue-600 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center min-w-[50px]"
+          title="Use my location"
+        >
+          {isLocating ? '...' : '📍'}
+        </button>
       </div>
 
       <MapContainer
@@ -123,7 +153,7 @@ const MapView = ({ infrastructure, complaints = [] }) => {
                 <h3 className="text-base font-black mb-1">{item.name}</h3>
                 <div className="flex gap-2 mb-2">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.status === 'green' ? 'bg-emerald-100 text-emerald-700' :
-                      item.status === 'yellow' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
+                    item.status === 'yellow' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
                     }`}>
                     {item.status}
                   </span>
