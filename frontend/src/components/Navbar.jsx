@@ -36,11 +36,12 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-dark-bg shadow-md transition-colors duration-300 relative z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[100%] mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-smart-blue dark:text-blue-400">
-              INFRA SENSE
+            <Link to="/" className="text-2xl font-black tracking-tighter hover:scale-105 transition-transform">
+              <span className="text-blue-600 dark:text-blue-500">INFRA</span>
+              <span className="text-gray-900 dark:text-white">SENSE</span>
             </Link>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               {navItems.map((item) => (
