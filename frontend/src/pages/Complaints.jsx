@@ -47,12 +47,22 @@ const Complaints = () => {
     const params = new URLSearchParams(window.location.search);
     const lat = params.get('lat');
     const lng = params.get('lng');
-    if (lat && lng) {
+    const addressParam = params.get('address');
+
+    if (addressParam) {
+      setFormData(prev => ({
+        ...prev,
+        location: addressParam
+      }));
+    } else if (lat && lng) {
       setFormData(prev => ({
         ...prev,
         location: `Lat: ${parseFloat(lat).toFixed(4)}, Lng: ${parseFloat(lng).toFixed(4)}`
       }));
-      // Optional: Clean URL
+    }
+
+    // Optional: Clean URL
+    if (lat || lng || addressParam) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -64,7 +74,7 @@ const Complaints = () => {
   }, []);
 
   useEffect(() => {
-    if (address) {
+    if (address && (!formData.location || formData.location === 'Detecting location...')) {
       setFormData(prev => ({ ...prev, location: address }));
     }
   }, [address]);

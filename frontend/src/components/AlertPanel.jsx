@@ -19,7 +19,7 @@ const AlertPanel = ({ alerts }) => {
   }
 
   return (
-    <div className="glass border-rose-500/20 rounded-[40px] p-10 mb-12 shadow-2xl shadow-rose-500/10 relative overflow-hidden">
+    <div className="glass border-rose-500/20 rounded-[40px] p-6 sm:p-10 mb-12 shadow-2xl shadow-rose-500/10 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 relative z-10">

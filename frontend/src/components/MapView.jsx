@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLocationContext } from '../context/LocationContext';
@@ -43,14 +44,27 @@ const ChangeView = ({ center, zoom }) => {
   return null;
 };
 
+// Component to handle map clicks
+const MapClickHandler = ({ onMapClick }) => {
+  useMapEvents({
+    click: (e) => {
+      onMapClick(e.latlng);
+    },
+  });
+  return null;
+};
+
 const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   const { userLocation } = useLocationContext();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [mapCenter, setMapCenter] = useState(userLocation || [40.7128, -74.0060]);
   const [zoom, setZoom] = useState(13);
   const [isLocating, setIsLocating] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [clickedPos, setClickedPos] = useState(null);
+  const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -110,6 +124,46 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
     }
   };
 
+  const handleMapClick = async (latlng) => {
+    setClickedPos({ lat: latlng.lat, lng: latlng.lng, address: 'Loading address...', risks: [] });
+    setIsReverseGeocoding(true);
+
+    try {
+      // Get Address
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`);
+      const data = await res.json();
+      const address = data.display_name || `Lat: ${latlng.lat.toFixed(4)}, Lng: ${latlng.lng.toFixed(4)}`;
+
+      // Find nearby risks
+      const radius = 0.002; // Small radius for clicks
+      const nearbyInfra = infrastructure.filter(item =>
+        item.location &&
+        Math.abs(item.location.lat - latlng.lat) < radius &&
+        Math.abs(item.location.lng - latlng.lng) < radius &&
+        item.status !== 'green'
+      );
+
+      const nearbyComplaints = complaints.filter(c =>
+        c.userCoords &&
+        Math.abs(c.userCoords.lat - latlng.lat) < radius &&
+        Math.abs(c.userCoords.lng - latlng.lng) < radius &&
+        c.status !== 'resolved'
+      );
+
+      const combinedRisks = [
+        ...nearbyInfra.map(i => ({ type: 'System', detail: `${i.name}: ${i.anomaly || 'Potential issue'}` })),
+        ...nearbyComplaints.map(c => ({ type: 'Citizen', detail: c.description }))
+      ];
+
+      setClickedPos(prev => ({ ...prev, address, risks: combinedRisks }));
+    } catch (e) {
+      console.error("Reverse geocoding error", e);
+      setClickedPos(prev => ({ ...prev, address: 'Error fetching location' }));
+    } finally {
+      setIsReverseGeocoding(false);
+    }
+  };
+
   return (
     <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-[calc(100vh-64px)] rounded-none border-0' : 'h-[600px]'}`}>
       <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex flex-col gap-2">
@@ -164,6 +218,65 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
+        <MapClickHandler onMapClick={handleMapClick} />
+
+        {/* User Click Popup */}
+        {clickedPos && (
+          <Popup
+            position={[clickedPos.lat, clickedPos.lng]}
+            onClose={() => setClickedPos(null)}
+          >
+            <div className="p-3 min-w-[220px] max-w-[280px]">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center text-lg">📍</div>
+                <div className="overflow-hidden">
+                  <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Selected Location</h3>
+                  <p className="text-[11px] font-bold text-gray-800 truncate">{clickedPos.address}</p>
+                </div>
+              </div>
+
+              <div className="mb-4 bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Risk Assessment</span>
+                  {clickedPos.risks.length > 0 ? (
+                    <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>
+                  ) : (
+                    <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                  )}
+                </div>
+
+                {clickedPos.risks.length > 0 ? (
+                  <div className="space-y-2">
+                    {clickedPos.risks.slice(0, 2).map((risk, i) => (
+                      <div key={i} className="flex gap-2">
+                        <span className="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-black uppercase whitespace-nowrap h-fit">{risk.type}</span>
+                        <p className="text-[10px] text-gray-600 font-medium leading-tight">{risk.detail}</p>
+                      </div>
+                    ))}
+                    {clickedPos.risks.length > 2 && (
+                      <p className="text-[9px] text-gray-400 font-bold italic">+{clickedPos.risks.length - 2} more issues detected</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-black uppercase">Clear</span>
+                    <p className="text-[10px] text-gray-500 font-medium italic">No active risks detected in this area.</p>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  const url = `/complaints?lat=${clickedPos.lat}&lng=${clickedPos.lng}&address=${encodeURIComponent(clickedPos.address)}`;
+                  navigate(url);
+                }}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg hover:shadow-blue-200"
+              >
+                Complain on this location
+              </button>
+            </div>
+          </Popup>
+        )}
 
         {/* User Location */}
         {userLocation && (

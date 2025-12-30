@@ -35,13 +35,31 @@ const Navbar = () => {
     }
   };
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <nav className="bg-white dark:bg-dark-bg shadow-md transition-colors duration-300 relative z-50">
       <div className="max-w-[100%] mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
+            {/* Mobile menu button */}
+            <div className="flex items-center sm:hidden mr-2">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              >
+                <span className="sr-only">Open main menu</span>
+                <svg className={`${isMobileMenuOpen ? 'hidden' : 'block'} h-6 w-6`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg className={`${isMobileMenuOpen ? 'block' : 'hidden'} h-6 w-6`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
             <Link to="/" className="text-2xl font-black tracking-tighter hover:scale-105 transition-transform flex items-center gap-2">
-              <img src="/brand_logo.jpg" alt="Logo" className="w-10 h-10 object-contain" />
+              <img src="/brand_logo.jpg" alt="Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
               <div>
                 <span className="text-blue-600 dark:text-blue-500">INFRA</span>
                 <span className="text-gray-900 dark:text-white">SENSE</span>
@@ -70,13 +88,13 @@ const Navbar = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {!isAdmin ? (
               <div className="flex items-center gap-2">
                 <ThemeToggle />
                 <button
                   onClick={() => setShowLoginModal(true)}
-                  className="px-4 py-2 bg-smart-blue hover:bg-blue-700 text-white rounded-lg text-sm font-bold"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-smart-blue hover:bg-blue-700 text-white rounded-lg text-xs sm:text-sm font-bold"
                 >
                   Admin Login
                 </button>
@@ -86,7 +104,7 @@ const Navbar = () => {
                 <ThemeToggle />
                 <button
                   onClick={logout}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-bold"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs sm:text-sm font-bold"
                 >
                   Logout
                 </button>
@@ -96,9 +114,37 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile menu */}
+      <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} sm:hidden bg-white dark:bg-dark-card border-b border-gray-200 dark:border-gray-800`}>
+        <div className="pt-2 pb-3 space-y-1 px-4">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${location.pathname === item.path
+                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400'
+                : 'border-transparent text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 hover:text-gray-700'
+                }`}
+            >
+              {item.name}
+            </Link>
+          ))}
+          {!isAdmin && (
+            <Link
+              to="/complaints"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block w-full text-center mt-4 px-4 py-3 bg-red-600 text-white font-bold rounded-xl"
+            >
+              Register a Complain
+            </Link>
+          )}
+        </div>
+      </div>
+
       {showLoginModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100]">
-          <div className="bg-white dark:bg-dark-card p-8 rounded-3xl w-full max-w-md shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] px-4">
+          <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl">
             <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
             <form onSubmit={handleLogin} className="space-y-4">
               <input

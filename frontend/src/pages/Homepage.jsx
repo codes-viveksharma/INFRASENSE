@@ -60,8 +60,8 @@ const Homepage = () => {
               <span>Next-Gen City Governance</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-[0.95] mb-10 tracking-tighter animate-fade-in-up animation-delay-150">
-              <span className="text-blue-600">Monitor.</span> <span className="text-purple-600">Predict.</span> <span className="text-emerald-500">Prevent.</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[0.95] mb-6 sm:mb-10 tracking-tighter animate-fade-in-up animation-delay-150">
+              <span className="text-blue-600">Monitor.</span> <br className="sm:hidden" /> <span className="text-purple-600">Predict.</span> <br className="sm:hidden" /> <span className="text-emerald-500">Prevent.</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 mb-16 max-w-3xl mx-auto font-medium leading-relaxed animate-fade-in-up animation-delay-300">
@@ -131,14 +131,14 @@ const Homepage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {features.map((feature, index) => (
-              <div key={index} className="group bg-white dark:bg-dark-card p-12 rounded-[56px] shadow-sm hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+              <div key={index} className="group bg-white dark:bg-dark-card p-8 sm:p-12 rounded-[40px] sm:rounded-[56px] shadow-sm hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 border border-gray-100 dark:border-gray-800 relative overflow-hidden">
                 <div className={`w-24 h-24 ${feature.bg} rounded-[32px] flex items-center justify-center mb-10 group-hover:rotate-12 group-hover:scale-110 transition-all duration-500 shadow-lg`}>
                   {feature.icon}
                 </div>
-                <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">{feature.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg font-medium">{feature.description}</p>
+                <h3 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">{feature.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-base sm:text-lg font-medium">{feature.description}</p>
 
-                <div className="mt-10 flex items-center text-blue-600 dark:text-blue-400 font-black text-xs uppercase tracking-widest gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
+                <div className="mt-6 sm:mt-10 flex items-center text-blue-600 dark:text-blue-400 font-black text-xs uppercase tracking-widest gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all sm:translate-y-4 sm:group-hover:translate-y-0">
                   Learn More
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
                 </div>
@@ -157,13 +157,13 @@ const Homepage = () => {
       {/* Live Status Card */}
       <section className="py-32 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gray-900 dark:bg-white rounded-[72px] p-12 md:p-24 relative overflow-hidden shadow-2xl">
+          <div className="bg-gray-900 dark:bg-white rounded-[48px] sm:rounded-[72px] p-8 md:p-24 relative overflow-hidden shadow-2xl">
             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] pointer-events-none" />
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
               <div>
                 <div className="text-blue-500 font-black text-sm uppercase tracking-[0.3em] mb-8">System Pulse</div>
-                <h2 className="text-5xl md:text-7xl font-black text-white dark:text-gray-900 mb-10 leading-[0.95]">
+                <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white dark:text-gray-900 mb-6 sm:mb-10 leading-[0.95]">
                   VIGILANT. <br /> ALWAYS.
                 </h2>
                 <p className="text-gray-400 dark:text-gray-500 text-xl mb-12 font-medium leading-relaxed">
