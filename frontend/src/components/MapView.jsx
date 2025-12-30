@@ -6,6 +6,16 @@ import { useLocationContext } from '../context/LocationContext';
 
 // ... (keep icon code same)
 
+// Click handler component defined outside to avoid re-mounting issues
+const MapEvents = ({ onMapClick }) => {
+  useMapEvents({
+    click(e) {
+      onMapClick(e.latlng);
+    },
+  });
+  return null;
+};
+
 const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   const { userLocation } = useLocationContext();
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,20 +65,8 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
     }
   };
 
-  // Click handler component
-  const MapEvents = () => {
-    useMapEvents({
-      click(e) {
-        setTargetLocation(e.latlng);
-      },
-    });
-    return null;
-  };
-
   const handleRegisterComplaint = () => {
     if (targetLocation) {
-      // Navigate to complaints page with pre-filled location
-      // Using window.location for simplicity or useNavigate if available
       window.location.href = `/complaints?lat=${targetLocation.lat}&lng=${targetLocation.lng}`;
     }
   };
@@ -107,7 +105,7 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
         zoomControl={false}
       >
         <ChangeView center={mapCenter} zoom={zoom} />
-        <MapEvents />
+        <MapEvents onMapClick={setTargetLocation} />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -152,36 +150,38 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
 
         {/* Infrastructure Markers */}
         {infrastructure.map(item => (
-          <Marker
-            key={item.id}
-            position={[item.location.lat, item.location.lng]}
-            icon={icons[item.status] || icons.blue}
-          >
-            <Popup>
-              <div className="p-2 min-w-[200px]">
-                <h3 className="text-base font-black mb-1">{item.name}</h3>
-                <div className="flex gap-2 mb-2">
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.status === 'green' ? 'bg-emerald-100 text-emerald-700' :
-                    item.status === 'yellow' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
-                    }`}>
-                    {item.status}
-                  </span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.type}</span>
-                </div>
-                <div className="text-sm font-medium text-gray-600">Reading: {item.value.toFixed(2)}</div>
-                {item.anomaly && (
-                  <div className="mt-2 text-rose-600 font-bold text-xs border-t pt-2 animate-pulse">
-                    ⚠️ {item.anomaly}
+          (item.location && item.location.lat && item.location.lng) ? (
+            <Marker
+              key={item.id}
+              position={[item.location.lat, item.location.lng]}
+              icon={icons[item.status] || icons.blue}
+            >
+              <Popup>
+                <div className="p-2 min-w-[200px]">
+                  <h3 className="text-base font-black mb-1">{item.name}</h3>
+                  <div className="flex gap-2 mb-2">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.status === 'green' ? 'bg-emerald-100 text-emerald-700' :
+                      item.status === 'yellow' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
+                      }`}>
+                      {item.status}
+                    </span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.type}</span>
                   </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
+                  <div className="text-sm font-medium text-gray-600">Reading: {item.value?.toFixed(2) || 'N/A'}</div>
+                  {item.anomaly && (
+                    <div className="mt-2 text-rose-600 font-bold text-xs border-t pt-2 animate-pulse">
+                      ⚠️ {item.anomaly}
+                    </div>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          ) : null
         ))}
 
         {/* Complaint Markers */}
         {complaints.map(complaint => (
-          complaint.userCoords && (
+          (complaint.userCoords && complaint.userCoords.lat && complaint.userCoords.lng) ? (
             <Marker
               key={complaint.id}
               position={[complaint.userCoords.lat, complaint.userCoords.lng]}
@@ -199,7 +199,7 @@ const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
                 </div>
               </Popup>
             </Marker>
-          )
+          ) : null
         ))}
       </MapContainer>
 
