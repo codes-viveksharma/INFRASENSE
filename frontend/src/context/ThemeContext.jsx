@@ -3,11 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage, default to light
-    const savedTheme = localStorage.getItem('smart-city-theme');
-    return savedTheme === 'dark';
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     // Update HTML class and localStorage

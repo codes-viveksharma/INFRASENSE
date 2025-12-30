@@ -43,49 +43,91 @@ const ChangeView = ({ center, zoom }) => {
   return null;
 };
 
-const MapView = ({ infrastructure, complaints = [] }) => {
+const MapView = ({ infrastructure, complaints = [], fullScreen = false }) => {
   const { userLocation } = useLocationContext();
   const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [mapCenter, setMapCenter] = useState(userLocation || [40.7128, -74.0060]);
   const [zoom, setZoom] = useState(13);
+  const [isLocating, setIsLocating] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery) return;
+  useEffect(() => {
+    if (searchQuery.length > 2) {
+      const delayDebounceFn = setTimeout(async () => {
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+          const data = await response.json();
+          setSuggestions(data.slice(0, 5));
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
+    } else {
+      setSuggestions([]);
+    }
+  }, [searchQuery]);
 
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
-      const data = await response.json();
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        setMapCenter([parseFloat(lat), parseFloat(lon)]);
-        setZoom(15);
-      } else {
-        alert('Location not found');
-      }
-    } catch (error) {
-      console.error('Search error:', error);
+  const handleLiveLocation = () => {
+    setIsLocating(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMapCenter([latitude, longitude]);
+          setZoom(16);
+          setIsLocating(false);
+        },
+        () => {
+          alert("Unable to retrieve your location");
+          setIsLocating(false);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser");
+      setIsLocating(false);
     }
   };
 
+  const handleSelectLocation = (lat, lon) => {
+    setMapCenter([parseFloat(lat), parseFloat(lon)]);
+    setZoom(16);
+    setSuggestions([]);
+    setSearchQuery('');
+  };
+
   return (
-    <div className="relative h-[600px] w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800">
-      <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm">
-        <form onSubmit={handleSearch} className="flex gap-2">
+    <div className={`relative w-full rounded-[32px] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800 ${fullScreen ? 'h-full rounded-none border-0' : 'h-[600px]'}`}>
+      <div className="absolute top-4 left-4 z-[1000] w-full max-w-sm flex gap-2">
+        <div className="relative flex-1">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Find a location..."
-            className="flex-1 px-5 py-3 rounded-2xl border-0 bg-white/90 backdrop-blur-md shadow-2xl outline-none text-sm font-medium"
+            placeholder="Search city, street..."
+            className="w-full px-5 py-3 rounded-2xl border-0 bg-white/90 backdrop-blur-md shadow-xl outline-none text-sm font-medium focus:ring-2 focus:ring-blue-500"
           />
-          <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-lg hover:bg-blue-700 transition-all"
-          >
-            Search
-          </button>
-        </form>
+          {suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl overflow-hidden">
+              {suggestions.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSelectLocation(item.lat, item.lon)}
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-100 last:border-0 truncate"
+                >
+                  {item.display_name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <button
+          onClick={handleLiveLocation}
+          className="px-4 py-3 bg-white/90 backdrop-blur-md text-blue-600 rounded-2xl font-bold text-sm shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center"
+          title="Use my location"
+        >
+          {isLocating ? '...' : '📍'}
+        </button>
       </div>
 
       <MapContainer
@@ -123,7 +165,7 @@ const MapView = ({ infrastructure, complaints = [] }) => {
                 <h3 className="text-base font-black mb-1">{item.name}</h3>
                 <div className="flex gap-2 mb-2">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.status === 'green' ? 'bg-emerald-100 text-emerald-700' :
-                      item.status === 'yellow' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
+                    item.status === 'yellow' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
                     }`}>
                     {item.status}
                   </span>
