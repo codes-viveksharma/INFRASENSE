@@ -40,9 +40,12 @@ const Navbar = () => {
       <div className="max-w-[100%] mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-black tracking-tighter hover:scale-105 transition-transform">
-              <span className="text-blue-600 dark:text-blue-500">INFRA</span>
-              <span className="text-gray-900 dark:text-white">SENSE</span>
+            <Link to="/" className="text-2xl font-black tracking-tighter hover:scale-105 transition-transform flex items-center gap-2">
+              <img src="/brand_logo.jpg" alt="Logo" className="w-10 h-10 object-contain" />
+              <div>
+                <span className="text-blue-600 dark:text-blue-500">INFRA</span>
+                <span className="text-gray-900 dark:text-white">SENSE</span>
+              </div>
             </Link>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               {navItems.map((item) => (

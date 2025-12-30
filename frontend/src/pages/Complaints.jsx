@@ -212,18 +212,18 @@ const Complaints = () => {
                 } catch (err) { alert('Submission failed'); }
               }} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" required className="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
-                  <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" required className="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Full Name" required className="bg-gray-50 dark:bg-gray-900/50 dark:text-white p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" required className="bg-gray-50 dark:bg-gray-900/50 dark:text-white p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex gap-3">
-                    <input type="tel" value={formData.mobile} onChange={(e) => setFormData({ ...formData, mobile: e.target.value })} placeholder="Mobile Number" required disabled={isOtpVerified} className="flex-1 bg-gray-50 dark:bg-gray-900/50 p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none" />
+                    <input type="tel" value={formData.mobile} onChange={(e) => setFormData({ ...formData, mobile: e.target.value })} placeholder="Mobile Number" required disabled={isOtpVerified} className="flex-1 bg-gray-50 dark:bg-gray-900/50 dark:text-white p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none" />
                     {!isOtpVerified && <button type="button" onClick={() => setIsOtpSent(true)} className="px-8 bg-blue-600 text-white rounded-3xl font-bold uppercase text-xs">{isOtpSent ? 'Resend' : 'Get OTP'}</button>}
                   </div>
                   {isOtpSent && !isOtpVerified && (
                     <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-3xl border border-blue-200 dark:border-blue-800">
-                      <p className="text-xs font-bold text-blue-600 mb-4 uppercase tracking-widest text-center">Identity Verification (Demo: 261-105)</p>
+                      <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-4 uppercase tracking-widest text-center">Identity Verification (Demo: 261-105)</p>
                       <div className="flex gap-4">
                         <input
                           type="text"
@@ -235,7 +235,7 @@ const Complaints = () => {
                             setOtpError(false);
                           }}
                           maxLength={7}
-                          className={`flex-1 bg-white dark:bg-gray-900 p-5 rounded-2xl text-center text-2xl font-bold border-2 transition-all ${otpError ? 'border-rose-500 bg-rose-50' : 'border-transparent'}`}
+                          className={`flex-1 bg-white dark:bg-gray-900 dark:text-white p-5 rounded-2xl text-center text-2xl font-bold border-2 transition-all ${otpError ? 'border-rose-500 bg-rose-50' : 'border-transparent'}`}
                           placeholder="261-105"
                         />
                         <button
@@ -289,7 +289,7 @@ const Complaints = () => {
                       <textarea
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        className="w-full bg-white dark:bg-gray-900 p-4 rounded-2xl border border-blue-100 dark:border-blue-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="w-full bg-white dark:bg-gray-900 dark:text-white p-4 rounded-2xl border border-blue-100 dark:border-blue-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         rows={2}
                         placeholder="Enter full address..."
                       />
@@ -304,7 +304,7 @@ const Complaints = () => {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Search for another area..."
-                          className="flex-1 bg-white dark:bg-gray-900 p-4 rounded-2xl border border-blue-100 dark:border-blue-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="flex-1 bg-white dark:bg-gray-900 dark:text-white p-4 rounded-2xl border border-blue-100 dark:border-blue-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         />
                         <button
                           type="button"
@@ -334,7 +334,7 @@ const Complaints = () => {
 
                 <div className="space-y-4">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block ml-2">Infrastructure Type</label>
-                  <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className="w-full bg-gray-50 dark:bg-gray-900/50 p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none">
+                  <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className="w-full bg-gray-50 dark:bg-gray-900/50 dark:text-white p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none">
                     <option value="Street Light">Street Light</option>
                     <option value="Traffic signal">Traffic signal</option>
                     <option value="Water supply">Water supply</option>
@@ -389,7 +389,7 @@ const Complaints = () => {
                   </div>
                 </div>
 
-                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Incident description..." required rows={4} className="w-full bg-gray-50 dark:bg-gray-900/50 p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Incident description..." required rows={4} className="w-full bg-gray-50 dark:bg-gray-900/50 dark:text-white p-5 rounded-3xl border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
 
                 <button type="submit" disabled={!isOtpVerified} className="w-full py-6 bg-blue-600 text-white rounded-[32px] font-black text-xl shadow-2xl transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-30">SUBMIT INCIDENT REPORT</button>
               </form>
